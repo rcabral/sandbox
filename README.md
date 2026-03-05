@@ -35,8 +35,19 @@ A aplicação estará disponível em `http://localhost:8080`.
 
 ## Swagger UI / OpenAPI
 
-A interface do Swagger encontra-se ativa em modo desenvolvimento e produção:
 🔗 **URL**: [http://localhost:8080/swagger-ui/](http://localhost:8080/swagger-ui/)
+
+## Cobertura de Testes (Jacoco)
+
+A aplicação conta com o plugin Jacoco integrado no ecossistema do Quarkus (`quarkus-jacoco`).
+
+Para rodar os testes e gerar um relatório completo de cobertura (Coverage) do projeto inteiro:
+```bash
+mvn clean verify
+```
+
+Após o build com sucesso, o report interativo em formato HTML estará disponível na pasta:
+👉 `target/jacoco-report/index.html`. Você pode abrir este arquivo diretamente no seu navegador ver detalhes da saúde das classes testadas.
 
 ## Como Gerar Imagem Docker (RNF-07)
 
