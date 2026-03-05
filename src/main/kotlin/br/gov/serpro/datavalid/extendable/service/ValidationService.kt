@@ -1,7 +1,6 @@
 package br.gov.serpro.datavalid.extendable.service
 
-import br.gov.serpro.datavalid.extendable.auth.Authenticator
-import br.gov.serpro.datavalid.extendable.domain.Credential
+import br.gov.serpro.datavalid.extendable.client.SourceApiClient
 import br.gov.serpro.datavalid.extendable.dto.ValidationItem
 import br.gov.serpro.datavalid.extendable.dto.ValidationRequest
 import br.gov.serpro.datavalid.extendable.dto.ValidationResponse
@@ -10,11 +9,8 @@ import br.gov.serpro.datavalid.extendable.security.ClientContext
 import br.gov.serpro.datavalid.extendable.validation.Validation
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import jakarta.enterprise.context.ApplicationScoped
-import jakarta.enterprise.inject.Instance
 import jakarta.inject.Inject
 import jakarta.ws.rs.ForbiddenException
-import java.net.HttpURLConnection
-import java.net.URL
 import org.jboss.logging.Logger
 
 @ApplicationScoped
@@ -26,7 +22,7 @@ class ValidationService {
 
     @Inject lateinit var logger: Logger
 
-    @Inject lateinit var authenticators: Instance<Authenticator>
+    @Inject lateinit var sourceApiClient: SourceApiClient
 
     private val objectMapper = jacksonObjectMapper()
 
@@ -46,7 +42,7 @@ class ValidationService {
         }
 
         val apiUrl = "${source.uri}?${request.key_attribute}=${request.key_value}"
-        val responseJson = getApiResponse(apiUrl, source.credential) ?: return null
+        val responseJson = sourceApiClient.getApiResponse(apiUrl, source.credential) ?: return null
 
         try {
             val responseDataList: List<Map<String, Any>> =
@@ -65,32 +61,6 @@ class ValidationService {
         } catch (e: Exception) {
             e.printStackTrace()
             return null
-        }
-    }
-
-    private fun getApiResponse(apiUrl: String, credential: Credential?): String? {
-        return try {
-            val url = URL(apiUrl)
-            val connection = url.openConnection() as HttpURLConnection
-            connection.requestMethod = "GET"
-
-            credential?.let { cred ->
-                authenticators.find { it.supports(cred) }?.authenticate(connection, cred)
-                        ?: logger.warn(
-                                "Nenhuma estratégia de autenticação encontrada para a credencial."
-                        )
-            }
-
-            connection.connect()
-
-            if (connection.responseCode == 200) {
-                connection.inputStream.bufferedReader().use { it.readText() }
-            } else {
-                null
-            }
-        } catch (e: Exception) {
-            logger.error("Erro ao chamar API externa!", e)
-            null
         }
     }
 
