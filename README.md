@@ -21,19 +21,9 @@ Uma aplicação robusta construída sobre **Quarkus** e **Kotlin**, com suporte 
 
 ## Arquitetura e Modelagem
 
-Abaixo está o diagrama de classes detalhado contendo a relação entre as Validações, Fontes de Dados e Autenticadores pertinentes ao projeto:
+Os detalhes de engenharia de software da aplicação, abordando os Design Patterns e relacionamentos entre Entidades, assim como Padrões Estruturais e de Banco de Dados foram extraídos para uma documentação dedicada.
 
-![Diagrama de Classes VaaS](docs/diagrams/diagrama-de-classes.svg)
-
-*(O código-fonte PlantUML deste diagrama pode ser consultado e alterado em [docs/diagrams/class_diagram.puml](docs/diagrams/class_diagram.puml))*
-
-### Modelo de Dados e Relacionamento
-
-Para garantir suporte para ACL e flexibilidade de Autenticadores a aplicação se baseia na persistência das informações nas seguintes entidades relacionais:
-
-![Diagrama de Entidade e Relacionamento VaaS](docs/diagrams/diagrama-de-entidade-relacionamento.svg)
-
-*(O código-fonte PlantUML deste diagrama pode ser consultado e alterado em [docs/diagrams/erd_diagram.puml](docs/diagrams/erd_diagram.puml))*
+🔗 **Consulte a Documentação de Arquitetura completa com Diagramas VaaS aqui**: [docs/architecture.md](docs/architecture.md)
 
 ## Como Executar Localmente (HSQLDB)
 
