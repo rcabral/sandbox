@@ -17,42 +17,47 @@ import org.jboss.resteasy.reactive.RestHeader
 @Path("/v1/validation")
 class ValidationResource {
 
-    @Inject
-    lateinit var service: ValidationService
+    @Inject lateinit var service: ValidationService
 
     @POST
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    @Operation(summary = "Realiza a validação de atributos", description = "Validação combinada de múltiplos itens (Registration, Facial, etc)")
+    @Operation(
+            summary = "Realiza a validação de atributos",
+            description = "Validação combinada de múltiplos itens (Registration, Facial, etc)"
+    )
     @APIResponses(
-        APIResponse(responseCode = "200", description = "OK"),
-        APIResponse(responseCode = "400", description = "Bad Request"),
-        APIResponse(responseCode = "401", description = "Unauthorized"),
-        APIResponse(responseCode = "403", description = "Forbidden (ACL Denied)")
+            APIResponse(responseCode = "200", description = "OK"),
+            APIResponse(responseCode = "400", description = "Bad Request"),
+            APIResponse(responseCode = "401", description = "Unauthorized"),
+            APIResponse(responseCode = "403", description = "Forbidden (ACL Denied)"),
+            APIResponse(
+                    responseCode = "422",
+                    description = "Unprocessable Entity - Regra de Negócio"
+            )
     )
     @SecurityRequirement(name = "getToken")
     fun cria(
-        @RestHeader("Authorization") authorization: String?,
-        @RequestBody(
-            description = "ValidationRequest",
-            required = true,
-            content = [Content(
-                mediaType = MediaType.APPLICATION_JSON,
-                example = EXEMPLO_DE_VALIDACAO
-            )]
-        )
-        request: ValidationRequest
+            @RestHeader("Authorization") authorization: String?,
+            @RequestBody(
+                    description = "ValidationRequest",
+                    required = true,
+                    content =
+                            [
+                                    Content(
+                                            mediaType = MediaType.APPLICATION_JSON,
+                                            example = EXEMPLO_DE_VALIDACAO
+                                    )]
+            )
+            request: ValidationRequest
     ): Response {
         val validation = service.validate(request)
-        return if (validation != null) {
-            Response.ok(validation).build()
-        } else {
-            Response.status(Response.Status.NOT_FOUND).build()
-        }
+        return Response.ok(validation).build()
     }
 }
 
-private const val EXEMPLO_DE_VALIDACAO = """{
+private const val EXEMPLO_DE_VALIDACAO =
+        """{
   "sourceId": "ec0df5c8-40a7-4bbe-bad8-de075c8e2813",
   "key_attribute": "dokumento_identifikashon",
   "key_value": "CW123456",

@@ -28,7 +28,18 @@ class ValidationService {
 
     fun validate(request: ValidationRequest): ValidationResponse? {
         logger.info("Iniciando validação para o sourceId: ${request.sourceId}")
-        val source = sourceService.recuperaEntidade(request.sourceId) ?: return null
+        val source =
+                sourceService.recuperaEntidade(request.sourceId)
+                        ?: throw jakarta.ws.rs.WebApplicationException(
+                                jakarta.ws.rs.core.Response.status(422)
+                                        .entity(
+                                                mapOf(
+                                                        "message" to
+                                                                "A fonte de dados informada não foi encontrada"
+                                                )
+                                        )
+                                        .build()
+                        )
 
         // Checagem de ACL (RF-06)
         if (!source.isPublic) {

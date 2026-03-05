@@ -74,4 +74,20 @@ class ValidationServiceTest {
 
         assertThrows(ForbiddenException::class.java) { validationService.validate(request) }
     }
+
+    @Test
+    fun `test validate throws 422 exception if source not found`() {
+        val request = ValidationRequest("invalid-source", "cpf", "111", listOf())
+
+        `when`(sourceServiceMock.recuperaEntidade("invalid-source")).thenReturn(null)
+
+        val exception =
+                assertThrows(jakarta.ws.rs.WebApplicationException::class.java) {
+                    validationService.validate(request)
+                }
+        assertEquals(422, exception.response.status)
+
+        val entity = exception.response.entity as Map<*, *>
+        assertEquals("A fonte de dados informada não foi encontrada", entity["message"])
+    }
 }
