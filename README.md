@@ -49,6 +49,8 @@ docker run -i --rm -p 8080:8080 vaas-api
 
 ### Usando banco PostgreSQL em Produção (Profile `%prod`)
 
+Para inicializar a base de dados de produção, utilize o script disponibilizado em [`src/main/resources/schema.sql`](src/main/resources/schema.sql) para realizar a criação (DDL) das tabelas no seu PostgreSQL.
+
 Quando rodar o binário jar via java ou docker, defina as variáveis de ambiente:
 
 ```bash
