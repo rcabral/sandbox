@@ -41,8 +41,7 @@ class ValidationService {
             }
         }
 
-        val apiUrl = "${source.uri}?${request.key_attribute}=${request.key_value}"
-        val responseJson = sourceApiClient.getApiResponse(apiUrl, source.credential) ?: return null
+        val responseJson = sourceApiClient.getApiResponse(source, request) ?: return null
 
         try {
             val responseDataList: List<Map<String, Any>> =
