@@ -10,6 +10,11 @@ Uma aplicação robusta construída sobre **Quarkus** e **Kotlin**, com suporte 
 - **PostgreSQL** (Profile `%prod`)
 - **OpenAPI / Swagger** para documentação 
 
+## Arquitetura e Modelagem
+
+O diagrama de classes detalhado contendo a relação entre as Validações, Fontes de Dados e Autenticadores pode ser encontrado e renderizado no arquivo abaixo:
+🔗 **Diagrama de Classes PlantUML**: [docs/diagrams/class_diagram.puml](docs/diagrams/class_diagram.puml)
+
 ## Requisitos Atendidos
 - **Persistência**: RDBMS (JPA Panache).
 - **APIs Versionadas**: `/v1/source` e `/v1/validation`.
