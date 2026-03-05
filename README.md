@@ -36,7 +36,7 @@ A aplicação estará disponível em `http://localhost:8080`.
 ## Swagger UI / OpenAPI
 
 A interface do Swagger encontra-se ativa em modo desenvolvimento e produção:
-🔗 **URL**: [http://localhost:8080/q/swagger-ui/](http://localhost:8080/q/swagger-ui/)
+🔗 **URL**: [http://localhost:8080/swagger-ui/](http://localhost:8080/swagger-ui/)
 
 ## Como Gerar Imagem Docker (RNF-07)
 
