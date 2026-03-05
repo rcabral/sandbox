@@ -13,7 +13,7 @@ Atualmente as estratégias de validações herdam a interface `Validation`, mas 
 - [ ] **QRCodeValidation**: Parse e decodificação do QRCode seguro do GovBR/CNH para atestar a validade de uma documentação.
 
 ## 2. Segurança - Autenticação e Autorização
-- [ ] Implmentar uso so PLIN.
+- [ ] Implementar uso so PLIN.
 
 ## 3. Telemetria e Observabilidade
 - [ ] Adicionar logs.
