@@ -10,15 +10,6 @@ Uma aplicação robusta construída sobre **Quarkus** e **Kotlin**, com suporte 
 - **PostgreSQL** (Profile `%prod`)
 - **OpenAPI / Swagger** para documentação 
 
-## Arquitetura e Modelagem
-
-Abaixo está o diagrama de classes detalhado contendo a relação entre as Validações, Fontes de Dados e Autenticadores pertinentes ao projeto:
-
-![Diagrama de Classes VaaS](docs/diagrams/diagrama-de-classes.png)
-
-*(O código-fonte PlantUML deste diagrama pode ser consultado e alterado em [docs/diagrams/class_diagram.puml](docs/diagrams/class_diagram.puml))*
-
-
 ## Requisitos Atendidos
 - **Persistência**: RDBMS (JPA Panache).
 - **APIs Versionadas**: `/v1/source` e `/v1/validation`.
@@ -27,6 +18,22 @@ Abaixo está o diagrama de classes detalhado contendo a relação entre as Valid
 - **Autenticação Dupla (Dual Auth)**: A Credencial do Source agora suporta enum `BASIC` e `OAUTH2`.
 - **OCP nas Validações**: Pattern Strategy utilizado para acomodar os validadores base (Registration Validation, Facial, Documental, etc).
 - **Totalmente Stateless**: O container processa chamadas individualmente sem armazenar sessão no backend (Pronto para escalar).
+
+## Arquitetura e Modelagem
+
+Abaixo está o diagrama de classes detalhado contendo a relação entre as Validações, Fontes de Dados e Autenticadores pertinentes ao projeto:
+
+![Diagrama de Classes VaaS](docs/diagrams/diagrama-de-classes.svg)
+
+*(O código-fonte PlantUML deste diagrama pode ser consultado e alterado em [docs/diagrams/class_diagram.puml](docs/diagrams/class_diagram.puml))*
+
+### Modelo de Dados e Relacionamento
+
+Para garantir suporte para ACL e flexibilidade de Autenticadores a aplicação se baseia na persistência das informações nas seguintes entidades relacionais:
+
+![Diagrama de Entidade e Relacionamento VaaS](docs/diagrams/diagrama-de-entidade-relacionamento.svg)
+
+*(O código-fonte PlantUML deste diagrama pode ser consultado e alterado em [docs/diagrams/erd_diagram.puml](docs/diagrams/erd_diagram.puml))*
 
 ## Como Executar Localmente (HSQLDB)
 

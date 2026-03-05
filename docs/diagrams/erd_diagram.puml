@@ -1,0 +1,44 @@
+@startuml validation-as-a-service-erd
+skinparam monochrome false
+skinparam roundcorner 10
+skinparam linetype ortho
+
+' Ocultar o ícone circular indicando classe (E/C/etc)
+hide circle
+
+' Entidades do BD serão desenhadas como classes estereotipadas
+skinparam class {
+    BackgroundColor White
+    ArrowColor Black
+    BorderColor Black
+}
+
+entity "credentials" as credentials {
+  * id : BIGINT <<PK>>
+  --
+  * auth_type : VARCHAR(31)
+  username : VARCHAR(255)
+  password : VARCHAR(255)
+  tokenUrl : VARCHAR(255)
+  clientId : VARCHAR(255)
+  clientSecret : VARCHAR(255)
+}
+
+entity "sources" as sources {
+  * id : VARCHAR(255) <<PK>>
+  --
+  * uri : VARCHAR(255)
+  * is_public : BOOLEAN
+  credential_id : BIGINT <<FK>> <<UNIQUE>>
+}
+
+entity "source_allowed_clients" as source_allowed_clients {
+  * source_id : VARCHAR(255) <<FK>>
+  * client_id : VARCHAR(255)
+}
+
+' Relacionamentos
+sources "1" -left- "0..1" credentials : "tem credencial >"
+sources "1" -- "0..*" source_allowed_clients : "possui clientes >"
+
+@enduml
