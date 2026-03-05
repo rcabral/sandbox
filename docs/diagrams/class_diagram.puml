@@ -1,0 +1,92 @@
+@startuml validation-as-a-service-diagram
+skinparam classAttributeIconSize 0
+skinparam monochrome false
+skinparam roundcorner 10
+skinparam packageStyle rectangle
+
+package "br.gov.serpro.vaas.domain" {
+    
+    abstract class Credential {
+        + id: Long
+        + {abstract} getAuthTypeEnum(): AuthType
+    }
+    
+    class BasicCredential extends Credential {
+        + username: String
+        + password: String
+        + getAuthTypeEnum(): AuthType
+    }
+
+    class OAuth2Credential extends Credential {
+        + tokenUrl: String
+        + clientId: String
+        + clientSecret: String
+        + getAuthTypeEnum(): AuthType
+    }
+    
+    enum AuthType {
+        BASIC
+        OAUTH2
+    }
+
+    class Source {
+        + id: String
+        + uri: String
+        + isPublic: Boolean
+        + allowedClientIds: Set<String>
+        + resourceLocation(): URI
+    }
+    
+    Source "1" *-- "0..1" Credential : "possui >"
+    
+}
+
+package "br.gov.serpro.vaas.validation" {
+
+    interface Validation {
+        + {abstract} execute(attribute: String, value: String, referenceValue: String): ValidationResult
+        + {static} create(type: ValidationType): Validation
+    }
+    
+    class RegistrationValidation implements Validation {
+        + execute(attribute: String, value: String, referenceValue: String): ValidationResult
+        - calculateSimilarity(str1: String, str2: String): Double
+    }
+    
+    class FacialValidation implements Validation {
+        + execute(attribute: String, value: String, referenceValue: String): ValidationResult
+    }
+    
+    class DigitalValidation implements Validation {
+        + execute(attribute: String, value: String, referenceValue: String): ValidationResult
+    }
+    
+    class QRCodeValidation implements Validation {
+        + execute(attribute: String, value: String, referenceValue: String): ValidationResult
+    }
+    
+    class FacialWithLivenessValidation implements Validation {
+        + execute(attribute: String, value: String, referenceValue: String): ValidationResult
+    }
+    
+}
+
+package "br.gov.serpro.vaas.service" {
+    
+    class SourceService {
+        + persiste(id: String, sourceInfo: SourceInfo): SourceResponse
+        + recupera(id: String): SourceResponse
+        + recuperaEntidade(id: String): Source
+        + atualiza(id: String, sourceInfo: SourceInfo): SourceResponse
+        + remove(id: String)
+    }
+
+    class ValidationService {
+        + validate(request: ValidationRequest): ValidationResponse
+        - execute(validations: List<ValidationItem>, responseData: Map<String, Any>): List<ValidationResult>
+    }
+
+    ValidationService ..> Validation : "Factory.create >"
+}
+
+@enduml
