@@ -77,6 +77,8 @@ mvn clean verify
 Após o build com sucesso, o report interativo em formato HTML estará disponível na pasta:
 👉 `target/jacoco-report/index.html`. Você pode abrir este arquivo diretamente no seu navegador ver detalhes da saúde das classes testadas.
 
+## Próximos Passos
 
+Atividades elencadas que ainda precisam ser implementadas para colocar a aplicação em Produção:
 
-
+🔗 **Consulte a Lista de Tarefas / Checklist de Produção (VaaS) aqui:** [TODO.md](TODO.md)
