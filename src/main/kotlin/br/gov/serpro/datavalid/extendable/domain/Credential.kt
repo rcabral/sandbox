@@ -1,38 +1,47 @@
 package br.gov.serpro.datavalid.extendable.domain
 
-import jakarta.persistence.Embeddable
-import jakarta.persistence.EnumType
-import jakarta.persistence.Enumerated
+import jakarta.persistence.*
 
-@Embeddable
-class Credential {
-    @Enumerated(EnumType.STRING)
-    var authType: AuthType? = null
+@Entity
+@Table(name = "credentials")
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+@DiscriminatorColumn(name = "auth_type", discriminatorType = DiscriminatorType.STRING)
+abstract class Credential {
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY) var id: Long? = null
 
-    // For BASIC
+    abstract fun getAuthTypeEnum(): AuthType
+}
+
+@Entity
+@DiscriminatorValue("BASIC")
+class BasicCredential : Credential {
     var username: String? = null
     var password: String? = null
 
-    // For OAUTH2
+    constructor()
+
+    constructor(username: String?, password: String?) {
+        this.username = username
+        this.password = password
+    }
+
+    override fun getAuthTypeEnum(): AuthType = AuthType.BASIC
+}
+
+@Entity
+@DiscriminatorValue("OAUTH2")
+class OAuth2Credential : Credential {
     var tokenUrl: String? = null
     var clientId: String? = null
     var clientSecret: String? = null
 
     constructor()
 
-    constructor(
-        authType: AuthType? = AuthType.BASIC,
-        username: String? = null,
-        password: String? = null,
-        tokenUrl: String? = null,
-        clientId: String? = null,
-        clientSecret: String? = null
-    ) {
-        this.authType = authType
-        this.username = username
-        this.password = password
+    constructor(tokenUrl: String?, clientId: String?, clientSecret: String?) {
         this.tokenUrl = tokenUrl
         this.clientId = clientId
         this.clientSecret = clientSecret
     }
+
+    override fun getAuthTypeEnum(): AuthType = AuthType.OAUTH2
 }

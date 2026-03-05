@@ -1,25 +1,22 @@
 package br.gov.serpro.datavalid.extendable.service
 
 import br.gov.serpro.datavalid.extendable.dao.SourceDao
-import br.gov.serpro.datavalid.extendable.domain.Credential
-import br.gov.serpro.datavalid.extendable.domain.Source
+import br.gov.serpro.datavalid.extendable.domain.*
 import br.gov.serpro.datavalid.extendable.dto.*
 import jakarta.enterprise.context.ApplicationScoped
 import jakarta.inject.Inject
 import jakarta.transaction.Transactional
 import jakarta.ws.rs.BadRequestException
 import jakarta.ws.rs.NotFoundException
-import org.jboss.logging.Logger
 import java.net.URI
+import org.jboss.logging.Logger
 
 @ApplicationScoped
 class SourceService {
 
-    @Inject
-    lateinit var sourceDao: SourceDao
-    
-    @Inject
-    lateinit var logger: Logger
+    @Inject lateinit var sourceDao: SourceDao
+
+    @Inject lateinit var logger: Logger
 
     @Transactional
     fun persiste(id: String, sourceInfo: SourceInfo): SourceResponse {
@@ -30,14 +27,27 @@ class SourceService {
             throw BadRequestException("Invalid URI")
         }
 
-        val credential = sourceInfo.credential?.let {
-            Credential(it.authType, it.username, it.password, it.tokenUrl, it.clientId, it.clientSecret)
-        }
+        val credential =
+                sourceInfo.credential?.let {
+                    when (it) {
+                        is BasicCredentialDto -> BasicCredential(it.username, it.password)
+                        is OAuth2CredentialDto ->
+                                OAuth2Credential(it.tokenUrl, it.clientId, it.clientSecret)
+                        else -> throw IllegalArgumentException("Unsupported credential type")
+                    }
+                }
 
-        val source = Source(id, sourceInfo.uri, credential, sourceInfo.isPublic, sourceInfo.allowedClientIds)
+        val source =
+                Source(
+                        id,
+                        sourceInfo.uri,
+                        credential,
+                        sourceInfo.isPublic,
+                        sourceInfo.allowedClientIds
+                )
         sourceDao.persist(source)
         logger.info("Source com id $id persistido com sucesso")
-        
+
         return toResponse(source)
     }
 
@@ -63,11 +73,17 @@ class SourceService {
         source.uri = sourceInfo.uri
         source.isPublic = sourceInfo.isPublic
         source.allowedClientIds = sourceInfo.allowedClientIds
-        
-        source.credential = sourceInfo.credential?.let {
-            Credential(it.authType, it.username, it.password, it.tokenUrl, it.clientId, it.clientSecret)
-        }
-        
+
+        source.credential =
+                sourceInfo.credential?.let {
+                    when (it) {
+                        is BasicCredentialDto -> BasicCredential(it.username, it.password)
+                        is OAuth2CredentialDto ->
+                                OAuth2Credential(it.tokenUrl, it.clientId, it.clientSecret)
+                        else -> throw IllegalArgumentException("Unsupported credential type")
+                    }
+                }
+
         sourceDao.persist(source)
         return toResponse(source)
     }
@@ -79,21 +95,34 @@ class SourceService {
     }
 
     private fun toResponse(source: Source): SourceResponse {
-        val credentialDto = source.credential?.let {
-            CredentialDto(it.authType, it.username, it.password, it.tokenUrl, it.clientId, it.clientSecret)
-        }
+        val credentialDto =
+                source.credential?.let {
+                    when (it) {
+                        is BasicCredential -> BasicCredentialDto(it.username, it.password)
+                        is OAuth2Credential ->
+                                OAuth2CredentialDto(it.tokenUrl, it.clientId, it.clientSecret)
+                        else -> null
+                    }
+                }
 
         val acoes = createListaAcoes(source.id)
-        
-        return SourceResponse(source.id, source.uri, credentialDto, source.isPublic, source.allowedClientIds, acoes)
+
+        return SourceResponse(
+                source.id,
+                source.uri,
+                credentialDto,
+                source.isPublic,
+                source.allowedClientIds,
+                acoes
+        )
     }
 
     private fun createListaAcoes(clientId: String): Collection<Acao> {
         val uri = URI("#/v1/source/$clientId").toString()
         return listOf(
-            Acao("atualiza", uri, Method.PUT),
-            Acao("remove", uri, Method.DELETE),
-            Acao("recupera", uri, Method.GET)
+                Acao("atualiza", uri, Method.PUT),
+                Acao("remove", uri, Method.DELETE),
+                Acao("recupera", uri, Method.GET)
         )
     }
 }

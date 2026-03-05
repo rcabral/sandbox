@@ -1,6 +1,5 @@
 package br.gov.serpro.datavalid.extendable.service
 
-import br.gov.serpro.datavalid.extendable.domain.AuthType
 import br.gov.serpro.datavalid.extendable.domain.Credential
 import br.gov.serpro.datavalid.extendable.dto.ValidationItem
 import br.gov.serpro.datavalid.extendable.dto.ValidationRequest
@@ -12,34 +11,33 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import jakarta.enterprise.context.ApplicationScoped
 import jakarta.inject.Inject
 import jakarta.ws.rs.ForbiddenException
-import org.jboss.logging.Logger
 import java.net.HttpURLConnection
 import java.net.URL
 import java.util.*
+import org.jboss.logging.Logger
 
 @ApplicationScoped
 class ValidationService {
 
-    @Inject
-    lateinit var sourceService: SourceService
+    @Inject lateinit var sourceService: SourceService
 
-    @Inject
-    lateinit var clientContext: ClientContext
-    
-    @Inject
-    lateinit var logger: Logger
+    @Inject lateinit var clientContext: ClientContext
+
+    @Inject lateinit var logger: Logger
 
     private val objectMapper = jacksonObjectMapper()
 
     fun validate(request: ValidationRequest): ValidationResponse? {
         logger.info("Iniciando validação para o sourceId: ${request.sourceId}")
         val source = sourceService.recuperaEntidade(request.sourceId) ?: return null
-        
+
         // Checagem de ACL (RF-06)
         if (!source.isPublic) {
             val clientId = clientContext.getClientId()
             if (clientId == null || !source.allowedClientIds.contains(clientId)) {
-                logger.warn("Acesso negado ao clientId $clientId para a source privada ${source.id}")
+                logger.warn(
+                        "Acesso negado ao clientId $clientId para a source privada ${source.id}"
+                )
                 throw ForbiddenException("O cliente não possui acesso a esta fonte primária.")
             }
         }
@@ -48,14 +46,19 @@ class ValidationService {
         val responseJson = getApiResponse(apiUrl, source.credential) ?: return null
 
         try {
-            val responseDataList: List<Map<String, Any>> = objectMapper.readValue(responseJson, List::class.java) as List<Map<String, Any>>
+            val responseDataList: List<Map<String, Any>> =
+                    objectMapper.readValue(responseJson, List::class.java) as List<Map<String, Any>>
             val responseData = responseDataList.firstOrNull() ?: return null
 
             val validationResults = execute(request.validations, responseData)
 
             logger.info("Validação concluída com sucesso para o sourceId: ${request.sourceId}")
-            return ValidationResponse(request.sourceId, request.key_attribute, request.key_value, validationResults)
-            
+            return ValidationResponse(
+                    request.sourceId,
+                    request.key_attribute,
+                    request.key_value,
+                    validationResults
+            )
         } catch (e: Exception) {
             e.printStackTrace()
             return null
@@ -69,18 +72,18 @@ class ValidationService {
             connection.requestMethod = "GET"
 
             credential?.let {
-                when (it.authType) {
-                    AuthType.BASIC, null -> {
+                when (it) {
+                    is br.gov.serpro.datavalid.extendable.domain.BasicCredential -> {
                         val auth = "${it.username}:${it.password}"
                         val encodedAuth = Base64.getEncoder().encodeToString(auth.toByteArray())
                         connection.setRequestProperty("Authorization", "Basic $encodedAuth")
                     }
-                    AuthType.OAUTH2 -> {
+                    is br.gov.serpro.datavalid.extendable.domain.OAuth2Credential -> {
                         logger.info("Simulando geração de token OAuth2 para url ${it.tokenUrl}")
-                        // Na prática faríamos outra request Http e pegaríamos o access_token, mas pro exercício vamos enviar um mock:
                         val mockedToken = "mocked_oauth2_token_for_${it.clientId}"
                         connection.setRequestProperty("Authorization", "Bearer $mockedToken")
                     }
+                    else -> {}
                 }
             }
 
@@ -97,7 +100,10 @@ class ValidationService {
         }
     }
 
-    private fun execute(validations: List<ValidationItem>, responseData: Map<String, Any>): List<ValidationResult> {
+    private fun execute(
+            validations: List<ValidationItem>,
+            responseData: Map<String, Any>
+    ): List<ValidationResult> {
         return validations.map { validationItem ->
             val expectedValue = responseData[validationItem.path]?.toString() ?: ""
             val validation = Validation.create(validationItem.type)
