@@ -14,10 +14,11 @@ Atualmente as estratégias de validações herdam a interface `Validation`, mas 
 
 ## 2. Segurança - Autenticação e Autorização
 - [ ] Implementar uso so PLIN.
+- [ ] Incluir o clientId no contexto da aplicação.
 
 ## 3. Telemetria e Observabilidade
 - [ ] Adicionar logs.
-- [ ] Habilitar o pacote Micrometer Prometheus (`quarkus-micrometer-registry-prometheus`) para injetar o endpoint nativo `/q/metrics`.
+- [ ] Incluir agente de monitoramento. 
 
 ## 4. Integração e Entrega Contínua (CI/CD)
 O projeto carece de pipelines para deploys automatizados:
