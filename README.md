@@ -12,8 +12,12 @@ Uma aplicação robusta construída sobre **Quarkus** e **Kotlin**, com suporte 
 
 ## Arquitetura e Modelagem
 
-O diagrama de classes detalhado contendo a relação entre as Validações, Fontes de Dados e Autenticadores pode ser encontrado e renderizado no arquivo abaixo:
-🔗 **Diagrama de Classes PlantUML**: [docs/diagrams/class_diagram.puml](docs/diagrams/class_diagram.puml)
+Abaixo está o diagrama de classes detalhado contendo a relação entre as Validações, Fontes de Dados e Autenticadores pertinentes ao projeto:
+
+![Diagrama de Classes VaaS](docs/diagrams/diagrama-de-classes.png)
+
+*(O código-fonte PlantUML deste diagrama pode ser consultado e alterado em [docs/diagrams/class_diagram.puml](docs/diagrams/class_diagram.puml))*
+
 
 ## Requisitos Atendidos
 - **Persistência**: RDBMS (JPA Panache).
