@@ -1,5 +1,6 @@
 package br.gov.serpro.datavalid.extendable.service
 
+import br.gov.serpro.datavalid.extendable.auth.Authenticator
 import br.gov.serpro.datavalid.extendable.domain.Credential
 import br.gov.serpro.datavalid.extendable.dto.ValidationItem
 import br.gov.serpro.datavalid.extendable.dto.ValidationRequest
@@ -9,11 +10,11 @@ import br.gov.serpro.datavalid.extendable.security.ClientContext
 import br.gov.serpro.datavalid.extendable.validation.Validation
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import jakarta.enterprise.context.ApplicationScoped
+import jakarta.enterprise.inject.Instance
 import jakarta.inject.Inject
 import jakarta.ws.rs.ForbiddenException
 import java.net.HttpURLConnection
 import java.net.URL
-import java.util.*
 import org.jboss.logging.Logger
 
 @ApplicationScoped
@@ -24,6 +25,8 @@ class ValidationService {
     @Inject lateinit var clientContext: ClientContext
 
     @Inject lateinit var logger: Logger
+
+    @Inject lateinit var authenticators: Instance<Authenticator>
 
     private val objectMapper = jacksonObjectMapper()
 
@@ -71,20 +74,11 @@ class ValidationService {
             val connection = url.openConnection() as HttpURLConnection
             connection.requestMethod = "GET"
 
-            credential?.let {
-                when (it) {
-                    is br.gov.serpro.datavalid.extendable.domain.BasicCredential -> {
-                        val auth = "${it.username}:${it.password}"
-                        val encodedAuth = Base64.getEncoder().encodeToString(auth.toByteArray())
-                        connection.setRequestProperty("Authorization", "Basic $encodedAuth")
-                    }
-                    is br.gov.serpro.datavalid.extendable.domain.OAuth2Credential -> {
-                        logger.info("Simulando geração de token OAuth2 para url ${it.tokenUrl}")
-                        val mockedToken = "mocked_oauth2_token_for_${it.clientId}"
-                        connection.setRequestProperty("Authorization", "Bearer $mockedToken")
-                    }
-                    else -> {}
-                }
+            credential?.let { cred ->
+                authenticators.find { it.supports(cred) }?.authenticate(connection, cred)
+                        ?: logger.warn(
+                                "Nenhuma estratégia de autenticação encontrada para a credencial."
+                        )
             }
 
             connection.connect()
