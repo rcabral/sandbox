@@ -10,7 +10,7 @@ Uma aplicação robusta construída sobre **Quarkus** e **Kotlin**, com suporte 
 - **PostgreSQL** (Profile `%prod`)
 - **OpenAPI / Swagger** para documentação 
 
-## Novos Requisitos Atendidos
+## Requisitos Atendidos
 - **Persistência**: RDBMS (JPA Panache).
 - **APIs Versionadas**: `/v1/source` e `/v1/validation`.
 - **ACL (Access Control List)**: Fontes têm indicativo se são públicas ou privadas. Para fontes privadas, é informada a lista de `client_ids` permitidos.
