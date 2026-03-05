@@ -1,6 +1,6 @@
 # Validation as a Service (VaaS)
 
-Uma aplicação robusta construída sobre **Quarkus** e **Kotlin**, projetada para substituir uma POC baseada em MongoDB por uma versão aderente a padrões de produção, com suporte a **PostgreSQL** (produção), **HSQLDB** (desenvolvimento), versionamento de API e integração com abstrações de validadores de identidade.
+Uma aplicação robusta construída sobre **Quarkus** e **Kotlin**, com suporte a **PostgreSQL** (produção), **HSQLDB** (desenvolvimento), versionamento de API e integração com abstrações de validadores de identidade.
 
 ## Tecnologias e Arquitetura
 - **Kotlin 2.0+**
@@ -11,7 +11,7 @@ Uma aplicação robusta construída sobre **Quarkus** e **Kotlin**, projetada pa
 - **OpenAPI / Swagger** para documentação 
 
 ## Novos Requisitos Atendidos
-- **Persistência**: Migrada completamente do MongoDB para RDBMS (JPA Panache).
+- **Persistência**: RDBMS (JPA Panache).
 - **APIs Versionadas**: `/v1/source` e `/v1/validation`.
 - **ACL (Access Control List)**: Fontes têm indicativo se são públicas ou privadas. Para fontes privadas, é informada a lista de `client_ids` permitidos.
 - **Checagem de ACL**: O header HTTP `X-Client-Id` é validado recursivamente nos testes.
