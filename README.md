@@ -36,33 +36,11 @@ mvnw.cmd quarkus:dev
 # No Linux/Mac execute:
 ./mvnw quarkus:dev
 ```
-
 A aplicação estará disponível em `http://localhost:8080`.
 
 ## Swagger UI / OpenAPI
 
 🔗 **URL**: [http://localhost:8080/swagger-ui/](http://localhost:8080/swagger-ui/)
-
-## Cobertura de Testes (Jacoco)
-
-A aplicação conta com o plugin Jacoco integrado no ecossistema do Quarkus (`quarkus-jacoco`).
-
-Para rodar os testes e gerar um relatório completo de cobertura (Coverage) do projeto inteiro:
-```bash
-mvn clean verify
-```
-
-Após o build com sucesso, o report interativo em formato HTML estará disponível na pasta:
-👉 `target/jacoco-report/index.html`. Você pode abrir este arquivo diretamente no seu navegador ver detalhes da saúde das classes testadas.
-
-## Como Gerar Imagem Docker (RNF-07)
-
-Criamos um `Dockerfile` multi-stage pronto para containerizar o app:
-
-```bash
-docker build -t vaas-api .
-docker run -i --rm -p 8080:8080 vaas-api
-```
 
 ### Usando banco PostgreSQL em Produção (Profile `%prod`)
 
@@ -77,3 +55,28 @@ docker run -e QUARKUS_PROFILE=prod \
            -e DB_PASSWORD=admin \
            -p 8080:8080 vaas-api
 ```
+
+## Como Gerar Imagem Docker (RNF-07)
+
+Criamos um `Dockerfile` multi-stage pronto para containerizar o app:
+
+```bash
+docker build -t vaas-api .
+docker run -i --rm -p 8080:8080 vaas-api
+```
+
+## Cobertura de Testes (Jacoco)
+
+A aplicação conta com o plugin Jacoco integrado no ecossistema do Quarkus (`quarkus-jacoco`).
+
+Para rodar os testes e gerar um relatório completo de cobertura (Coverage) do projeto inteiro:
+```bash
+mvn clean verify
+```
+
+Após o build com sucesso, o report interativo em formato HTML estará disponível na pasta:
+👉 `target/jacoco-report/index.html`. Você pode abrir este arquivo diretamente no seu navegador ver detalhes da saúde das classes testadas.
+
+
+
+
